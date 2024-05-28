@@ -1,11 +1,12 @@
 import { downloadAndUploadImage } from "@/lib/s3";
 import { User } from "@/types/user";
-import { insertWallpaper } from "@/models/wallpapers";
-import { getOpenAIClient } from "@/services/openai";
+import { insertWallpaper } from "@/models/wallpaper";
+import { getOpenAIClient } from "@/service/openai";
 import { Wallpaper } from "@/types/wallpaper";
 import { ImageGenerateParams } from "openai/resources/images.mjs";
 import { currentUser } from "@clerk/nextjs/server";
-import { saveUser } from "@/services/user";
+import { saveUser } from "@/service/user";
+import { getUserCredits } from "@/service/order";
 
 
 export async function POST(req: Request) {
@@ -21,6 +22,15 @@ export async function POST(req: Request) {
         });
       }
     const user_email = user.emailAddresses[0].emailAddress;
+
+    const credits = await getUserCredits(user_email);
+    if (credits.left_credits < 1) {
+      return Response.json({
+        code: -1,
+        message: "credits is not enough",
+      });
+    }
+
     const nickname = user.firstName;
     const avatarUrl = user.imageUrl;
     const userInfo: User = {

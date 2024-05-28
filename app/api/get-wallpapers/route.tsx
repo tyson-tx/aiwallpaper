@@ -1,4 +1,4 @@
-import { getWallpapers } from "@/models/wallpapers"
+import { getWallpapers } from "@/models/wallpaper"
 
 export async function GET(req:Request) {
 

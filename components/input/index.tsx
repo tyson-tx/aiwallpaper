@@ -23,6 +23,7 @@ export default function({ setWallpapers }: Props) {
             method: "POST",
             body: JSON.stringify(params),
         });
+        console.log("==================result:", result)
         const { data } = await result.json();
         setLoading(false);
         

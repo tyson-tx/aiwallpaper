@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/nextjs": "^5.1.0",
     "@radix-ui/react-slot": "^1.0.2",
+    "@stripe/stripe-js": "^3.4.1",
     "aws-sdk": "^2.1623.0",
     "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",
@@ -22,6 +23,7 @@
     "pg": "^8.11.5",
     "react": "^18",
     "react-dom": "^18",
+    "stripe": "^15.8.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7"
   },
