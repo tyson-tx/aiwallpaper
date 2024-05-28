@@ -8,7 +8,6 @@ export default async function ({ params }: { params: { session_id: string } }) {
   const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY || "");
   try {
     const session = await stripe.checkout.sessions.retrieve(params.session_id);
-    console.log("order session: ", session);
 
     console.log("metadata", session.metadata);
     if (!session || !session.metadata || !session.metadata.order_no) {
