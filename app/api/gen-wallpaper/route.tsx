@@ -7,6 +7,7 @@ import { ImageGenerateParams } from "openai/resources/images.mjs";
 import { currentUser } from "@clerk/nextjs/server";
 import { saveUser } from "@/service/user";
 import { getUserCredits } from "@/service/order";
+import { genUuid } from "@/lib/index";
 
 
 export async function POST(req: Request) {
@@ -69,11 +70,11 @@ export async function POST(req: Request) {
     }
 
     const img_name = encodeURIComponent(description);
-
+    const img_uuid = genUuid();
     const s3_img = await downloadAndUploadImage(
       raw_img_url,
       process.env.AWS_BUCKET || "wallpaperdemo",
-      `wallpapers/${img_name}.png`
+      `wallpapers/${img_uuid}.png`
     );
     const img_url = s3_img.Location;
     
@@ -86,6 +87,7 @@ export async function POST(req: Request) {
         llm_name: llm_name,
         llm_params: JSON.stringify(llm_params),
         created_at: created_at,
+        uuid: img_uuid,
       };
       await insertWallpaper(wallpaper);
 

@@ -2,6 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Wallpaper } from "@/types/wallpaper";
+import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Props {
   wallpapers: Wallpaper[];
@@ -26,35 +29,41 @@ export default function ({wallpapers}: Props) {
             {wallpapers &&
               wallpapers.map((wallpaper: Wallpaper, idx: number) => {
                 return (
-                  <div
-                    key={idx}
-                    className="mx-auto w-full max-w-md gap-4 rounded-md bg-[#f2f2f7] p-8 text-black sm:px-4 sm:py-8"
-                  >
-                    <div className="mb-3 flex w-full items-center justify-between">
-                      <div className="flex items-center">
-                        <img
-                          src={wallpaper.user_avatar}
-                          alt=""
-                          className="mr-4 inline-block h-8 w-8 rounded-full"
-                        />
-                        <h6 className="text-base font-bold">
-                          {wallpaper.user_nickname}
-                        </h6>
-                      </div>
-                      <a
-                        href="#"
-                        className="inline-block max-w-full text-black"
+                  <a
+                        href={`/wallpaper/${wallpaper.uuid}`}
+                        key={idx}
+                        className="rounded-xl overflow-hidden mb-4 inline-block border border-solid border-[#cdcdcd] md:mb-8 lg:mb-10"
                       >
-                        <span>{wallpaper.img_size}</span>
+                        <Image
+                          src={wallpaper.img_url}
+                          alt={wallpaper.img_description}
+                          width={350}
+                          height={200}
+                          loading="lazy"
+                        />
+
+                        <div className="px-5 py-4 sm:px-6">
+                          <p className="flex-col text-[#808080]">
+                            {wallpaper.img_description}
+                          </p>
+                          <div className="flex items-center mb-2 mt-6 flex-wrap gap-2 md:mb-2">
+                            <Badge variant="secondary">
+                              {wallpaper.img_size}
+                            </Badge>
+
+                            <div className="flex-1"></div>
+                            <Avatar>
+                              <AvatarImage
+                                src={wallpaper.created_user?.avatar_url}
+                                alt={wallpaper.created_user?.nickname}
+                              />
+                              <AvatarFallback>
+                                {wallpaper.created_user?.nickname}
+                              </AvatarFallback>
+                            </Avatar>
+                          </div>
+                        </div>
                       </a>
-                    </div>
-                    <img
-                      src={wallpaper.img_url}
-                      alt=""
-                      className="inline-block h-60 w-full rounded-md object-cover"
-                    />
-                    <div>{wallpaper.img_description}</div>
-                  </div>
                 );
               })}
           </div>

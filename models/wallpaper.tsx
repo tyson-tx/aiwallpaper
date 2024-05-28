@@ -1,14 +1,15 @@
 import { Wallpaper } from "@/types/wallpaper";
 import { getDb } from "./db";
+import { QueryResult, QueryResultRow } from "pg";
 
 export async function insertWallpaper(wallpaper: Wallpaper) {
   const db = getDb();
   const res = await db.query(
     `INSERT INTO wallpapers 
-          (user_email, img_description, img_size, img_url, llm_name, llm_params, created_at) 
-          VALUES 
-          ($1, $2, $3, $4, $5, $6, $7)
-      `,
+        (user_email, img_description, img_size, img_url, llm_name, llm_params, created_at, uuid) 
+        VALUES 
+        ($1, $2, $3, $4, $5, $6, $7, $8)
+    `,
     [
       wallpaper.user_email,
       wallpaper.img_description,
@@ -17,6 +18,7 @@ export async function insertWallpaper(wallpaper: Wallpaper) {
       wallpaper.llm_name,
       wallpaper.llm_params,
       wallpaper.created_at,
+      wallpaper.uuid,
     ]
   );
 
@@ -26,7 +28,7 @@ export async function insertWallpaper(wallpaper: Wallpaper) {
 export async function getWallpapers(
   page: number,
   limit: number
-): Promise<Wallpaper[] | undefined> {
+): Promise<Wallpaper[]> {
   if (page < 1) {
     page = 1;
   }
@@ -36,32 +38,67 @@ export async function getWallpapers(
   const offset = (page - 1) * limit;
 
   const db = getDb();
-  const res = await db.query(`select * from wallpapers limit $1 offset $2`, [
-    limit,
-    offset,
-  ]);
+  const res = await db.query(
+    `select w.*, u.uuid as user_uuid, u.email as user_email, u.nickname as user_name, u.avatar_url as user_avatar from wallpapers as w left join users as u on w.user_email = u.email order by w.created_at desc limit $1 offset $2`,
+    [limit, offset]
+  );
   if (res.rowCount === 0) {
-    return undefined;
+    return [];
   }
 
-  const { rows } = res;
-  let wallpapers: Wallpaper[] = [];
+  const wallpapers = getWallpapersFromSqlResult(res);
 
+  return wallpapers;
+}
+
+export function getWallpapersFromSqlResult(
+  res: QueryResult<QueryResultRow>
+): Wallpaper[] {
+  if (!res.rowCount || res.rowCount === 0) {
+    return [];
+  }
+
+  const wallpapers: Wallpaper[] = [];
+  const { rows } = res;
   rows.forEach((row) => {
-    const wallpaper: Wallpaper = {
-      id: row.id,
-      user_email: row.user_email,
-      img_description: row.img_description,
-      img_size: row.img_size,
-      img_url: row.img_url,
-      llm_name: row.llm_name,
-      llm_params: row.llm_params,
-      created_at: row.created_at,
-    };
-    wallpapers.push(wallpaper);
+    const wallpaper = formatWallpaper(row);
+    if (wallpaper) {
+      wallpapers.push(wallpaper);
+    }
   });
 
   return wallpapers;
+}
+
+export function formatWallpaper(row: QueryResultRow): Wallpaper | undefined {
+  let wallpaper: Wallpaper = {
+    id: row.id,
+    user_email: row.user_email,
+    img_description: row.img_description,
+    img_size: row.img_size,
+    img_url: row.img_url,
+    llm_name: row.llm_name,
+    llm_params: row.llm_params,
+    created_at: row.created_at,
+    uuid: row.uuid,
+  };
+
+  if (row.user_name || row.user_avatar) {
+    wallpaper.created_user = {
+      email: row.user_email,
+      nickname: row.user_name,
+      avatar_url: row.user_avatar,
+      uuid: row.user_uuid,
+    };
+  }
+
+  try {
+    wallpaper.llm_params = JSON.parse(JSON.stringify(wallpaper.llm_params));
+  } catch (e) {
+    console.log("parse wallpaper llm_params failed: ", e);
+  }
+
+  return wallpaper;
 }
 
 export async function getUserWallpapersCount(

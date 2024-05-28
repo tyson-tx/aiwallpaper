@@ -6,7 +6,8 @@ CREATE TABLE wallpapers (
     img_url TEXT,
     llm_name VARCHAR(100),
     llm_params JSON,
-    created_at timestamptz
+    created_at timestamptz,
+    uuid UUID UNIQUE NOT NULL
 );
 
 CREATE TABLE users (

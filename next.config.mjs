@@ -1,4 +1,7 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
-
-export default nextConfig;
+const nextConfig = {
+    images: {
+      domains: ['wallpaperdemo.s3.ap-northeast-1.amazonaws.com'],
+    },
+  };
+  
+  export default nextConfig;
