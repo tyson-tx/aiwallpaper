@@ -10,4 +10,5 @@ export interface Wallpaper {
     user_avatar?: string;
     user_nickname?: string;
     created_user?: User;
+    uuid: string;
   }
