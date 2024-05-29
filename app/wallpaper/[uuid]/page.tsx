@@ -5,6 +5,7 @@ import { FaDownload } from "react-icons/fa";
 import Image from "next/image";
 import { Metadata } from "next";
 import { Wallpaper } from "@/types/wallpaper";
+import Header from "@/components/header";
 
 export async function generateMetadata({
   params,
@@ -35,6 +36,7 @@ export default async function ({ params }: { params: { uuid: string } }) {
 
   return (
     <>
+    <Header />
       {wallpaper && (
         <section>
           <div className="mx-auto w-full max-w-7xl px-5 py-4 md:px-10 md:py-12">
