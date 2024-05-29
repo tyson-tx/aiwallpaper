@@ -1,4 +1,4 @@
-import { getUserCredits } from "@/service/order";
+import { getUserCredits } from "@/services/order";
 import { currentUser } from "@clerk/nextjs/server";
 
 export async function POST(req: Request) {

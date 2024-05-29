@@ -1,12 +1,12 @@
 import { downloadAndUploadImage } from "@/lib/s3";
 import { User } from "@/types/user";
 import { insertWallpaper } from "@/models/wallpaper";
-import { getOpenAIClient } from "@/service/openai";
+import { getOpenAIClient } from "@/services/openai";
 import { Wallpaper } from "@/types/wallpaper";
 import { ImageGenerateParams } from "openai/resources/images.mjs";
 import { currentUser } from "@clerk/nextjs/server";
-import { saveUser } from "@/service/user";
-import { getUserCredits } from "@/service/order";
+import { saveUser } from "@/services/user";
+import { getUserCredits } from "@/services/order";
 import { genUuid } from "@/lib/index";
 
 
